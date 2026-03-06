@@ -166,6 +166,80 @@ class CommandCentre implements IMediator {
         }
     }
 }
+
+//=====================================================
+// task 3 observer
+abstract class LightNode {
+    private eventListeners: Map<string, Function[]> = new Map();
+
+    abstract getOuterHTML(): string;
+    abstract getInnerHTML(): string;
+
+    public addEventListener(event: string, callback: Function): void {
+        if (!this.eventListeners.has(event)) {
+            this.eventListeners.set(event, []);
+        }
+        this.eventListeners.get(event)?.push(callback);
+        console.log(`[System]: Added listener for "${event}" on a node.`);
+    }
+
+    public removeEventListener(event: string, callback: Function): void {
+        const listeners = this.eventListeners.get(event);
+        if (listeners) {
+            this.eventListeners.set(
+                event,
+                listeners.filter(l => l !== callback),
+            );
+        }
+    }
+
+    public triggerEvent(event: string, eventData?: any): void {
+        const listeners = this.eventListeners.get(event);
+        if (listeners && listeners.length > 0) {
+            console.log(`[Event]: Triggering "${event}" on element...`);
+            listeners.forEach(callback => callback(eventData));
+        } else {
+            console.log(`[Event]: No listeners for "${event}".`);
+        }
+    }
+}
+class LightTextNode extends LightNode {
+    constructor(public text: string) {
+        super();
+    }
+    getOuterHTML() {
+        return this.text;
+    }
+    getInnerHTML() {
+        return this.text;
+    }
+}
+class LightElementNode extends LightNode {
+    public children: LightNode[] = [];
+    constructor(
+        public tagName: string,
+        public displayType: 'block' | 'inline',
+        public isSelfClosing: boolean,
+        public classes: string[] = [],
+    ) {
+        super();
+    }
+
+    addChild(node: LightNode) {
+        this.children.push(node);
+    }
+
+    getInnerHTML(): string {
+        return this.children.map(c => c.getOuterHTML()).join('');
+    }
+
+    getOuterHTML(): string {
+        const classAttr = this.classes.length ? ` class="${this.classes.join(' ')}"` : '';
+        if (this.isSelfClosing) return `<${this.tagName}${classAttr}/>`;
+        return `<${this.tagName}${classAttr}>${this.getInnerHTML()}</${this.tagName}>`;
+    }
+}
+
 ///=======================================
 
 function main() {
@@ -223,5 +297,35 @@ function main() {
     console.log('Undoing...');
     editor.restore(history.pop()!);
     editor.print();
+
+    console.log('\nObserver');
+
+    const button = new LightElementNode('button', 'inline', false, ['btn', 'btn-primary']);
+    button.addChild(new LightTextNode('Click Me!'));
+
+    button.addEventListener('click', () => {
+        console.log('>>> Observer 1: Button was clicked! Changing background color...');
+    });
+
+    button.addEventListener('click', (data: any) => {
+        console.log(`>>> Observer 2: Analytics log: Button clicked at ${new Date().toLocaleTimeString()}`);
+    });
+
+    button.addEventListener('mouseover', () => {
+        console.log('>>> Observer 3: Mouse is over the button. Showing tooltip...');
+    });
+
+    console.log('\nHTML Output:');
+    console.log(button.getOuterHTML());
+
+    console.log('\n--- Симуляція подій ---');
+    button.triggerEvent('click');
+
+    console.log('');
+    button.triggerEvent('mouseover');
+
+    console.log('');
+
+    button.triggerEvent('focus');
 }
 main();
