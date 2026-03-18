@@ -240,6 +240,41 @@ class LightElementNode extends LightNode {
     }
 }
 
+//task 4 strategy
+interface ImageLoadStrategy {
+    load(href: string): void;
+}
+
+class NetworkImageLoadStrategy implements ImageLoadStrategy {
+    load(href: string): void {
+        console.log(`[Strategy]: Завантаження зображення з МЕРЕЖІ (HTTP/HTTPS)... URL: ${href}`);
+    }
+}
+
+class FileSystemImageLoadStrategy implements ImageLoadStrategy {
+    load(href: string): void {
+        console.log(`[Strategy]: Читання зображення з ЛОКАЛЬНОГО ДИСКУ... Path: ${href}`);
+    }
+}
+
+class LightImageNode extends LightElementNode {
+    private loadStrategy: ImageLoadStrategy;
+
+    constructor(public href: string) {
+        super('img', 'inline', true);
+
+        if (href.startsWith('http://') || href.startsWith('https://')) {
+            this.loadStrategy = new NetworkImageLoadStrategy();
+        } else {
+            this.loadStrategy = new FileSystemImageLoadStrategy();
+        }
+        this.loadStrategy.load(this.href);
+    }
+    getOuterHTML(): string {
+        return `<img src="${this.href}" />`;
+    }
+}
+
 ///=======================================
 
 function main() {
@@ -327,5 +362,15 @@ function main() {
     console.log('');
 
     button.triggerEvent('focus');
+
+    console.log('\nSTRATEGY img-loading');
+
+    console.log('Створюємо локальне зображення:');
+    const localImg = new LightImageNode('C:/Users/Admin/Pictures/avatar.png');
+    console.log('Output:', localImg.getOuterHTML());
+
+    console.log('\nСтворюємо мережеве зображення:');
+    const webImg = new LightImageNode('https://google.com/images/logo.jpg');
+    console.log('Output:', webImg.getOuterHTML());
 }
 main();
