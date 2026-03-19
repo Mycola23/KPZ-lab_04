@@ -26,28 +26,28 @@ abstract class AbstractSupportHandler implements Handler {
 
 class Level1FAQ extends AbstractSupportHandler {
     public handle(request: number): string | null {
-        if (request === 1) return 'Ви обрали: Часті питання (FAQ). Відповідь: Перезавантажте пристрій.';
+        if (request === 1) return 'Обрано: Часті питання (FAQ). Відповідь: Перезавантажте пристрій.';
         return super.handle(request);
     }
 }
 
 class Level2Billing extends AbstractSupportHandler {
     public handle(request: number): string | null {
-        if (request === 2) return 'Ви обрали: Питання оплати. Перенаправляю до фінансового відділу...';
+        if (request === 2) return 'Обрано: Питання оплати. Перенаправляю до фінансового відділу...';
         return super.handle(request);
     }
 }
 
 class Level3Technical extends AbstractSupportHandler {
     public handle(request: number): string | null {
-        if (request === 3) return 'Ви обрали: Технічна підтримка. Опишіть вашу проблему в чаті.';
+        if (request === 3) return 'Обрано: Технічна підтримка. Опишіть вашу проблему в чаті.';
         return super.handle(request);
     }
 }
 
 class Level4Specialist extends AbstractSupportHandler {
     public handle(request: number): string | null {
-        if (request === 4) return "Ви обрали: З'єднання з оператором. Очікуйте на лінії...";
+        if (request === 4) return "Обрано: З'єднання з оператором. Очікуйте на лінії...";
         return super.handle(request);
     }
 }
@@ -100,11 +100,11 @@ class Runway {
     public isBusy: boolean = false;
 
     public highlightRed(): void {
-        console.log(`[Runway ${this.id}] LIGHT: RED (Busy)`);
+        console.log(`[Runway ${this.id}] LIGHT: RED--Busy`);
     }
 
     public highlightGreen(): void {
-        console.log(`[Runway ${this.id}] LIGHT: GREEN (Free)`);
+        console.log(`[Runway ${this.id}] LIGHT: GREEN--Free`);
     }
 }
 class Aircraft {
@@ -247,22 +247,20 @@ interface ImageLoadStrategy {
 
 class NetworkImageLoadStrategy implements ImageLoadStrategy {
     load(href: string): void {
-        console.log(`[Strategy]: Завантаження зображення з МЕРЕЖІ (HTTP/HTTPS)... URL: ${href}`);
+        console.log(`[Strategy]: Завантаження зображення з МЕРЕЖІ URL: ${href}`);
     }
 }
 
 class FileSystemImageLoadStrategy implements ImageLoadStrategy {
     load(href: string): void {
-        console.log(`[Strategy]: Читання зображення з ЛОКАЛЬНОГО ДИСКУ... Path: ${href}`);
+        console.log(`[Strategy]: Читання зображення з ЛОКАЛЬНОГО ДИСКУ Path: ${href}`);
     }
 }
 
 class LightImageNode extends LightElementNode {
     private loadStrategy: ImageLoadStrategy;
-
     constructor(public href: string) {
         super('img', 'inline', true);
-
         if (href.startsWith('http://') || href.startsWith('https://')) {
             this.loadStrategy = new NetworkImageLoadStrategy();
         } else {
@@ -291,7 +289,7 @@ function main() {
         console.log(`Користувач вводить: ${input}`);
         const result = h1.handle(input);
         if (result) console.log(result);
-        else console.log('Помилка! Такого пункту немає. Меню повторюється...');
+        else console.log('Помилка( Такого пункту немає. Меню повторюється...');
     });
     // =======================================
     console.log('\nmediator');
@@ -339,21 +337,21 @@ function main() {
     button.addChild(new LightTextNode('Click Me!'));
 
     button.addEventListener('click', () => {
-        console.log('>>> Observer 1: Button was clicked! Changing background color...');
+        console.log(' Observer 1: Button was clicked! Changing background color...');
     });
 
     button.addEventListener('click', (data: any) => {
-        console.log(`>>> Observer 2: Analytics log: Button clicked at ${new Date().toLocaleTimeString()}`);
+        console.log(` Observer 2: Analytics log: Button clicked at ${new Date().toLocaleTimeString()}`);
     });
 
     button.addEventListener('mouseover', () => {
-        console.log('>>> Observer 3: Mouse is over the button. Showing tooltip...');
+        console.log(' Observer 3: Mouse is over the button. Showing tooltip...');
     });
 
     console.log('\nHTML Output:');
     console.log(button.getOuterHTML());
 
-    console.log('\n--- Симуляція подій ---');
+    console.log('\n=== Event simulation ===');
     button.triggerEvent('click');
 
     console.log('');
@@ -365,11 +363,11 @@ function main() {
 
     console.log('\nSTRATEGY img-loading');
 
-    console.log('Створюємо локальне зображення:');
+    console.log('\nCreate local image:');
     const localImg = new LightImageNode('C:/Users/Admin/Pictures/avatar.png');
     console.log('Output:', localImg.getOuterHTML());
 
-    console.log('\nСтворюємо мережеве зображення:');
+    console.log('\nCreate network image:');
     const webImg = new LightImageNode('https://google.com/images/logo.jpg');
     console.log('Output:', webImg.getOuterHTML());
 }
